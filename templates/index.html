@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>To‑Do List</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center px-4">
+  <div class="w-full max-w-md">
+
+    <!-- Welcome banner -->
+    <div class="bg-gray-800 rounded p-4 mb-4 flex justify-between items-center">
+      <span class="text-lg font-semibold">
+        Welcome, {{ current_user.username }} 👋
+      </span>
+      <a href="/logout" class="text-purple-400 hover:underline text-sm">Logout</a>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="mb-4 flex gap-3 text-sm">
+      <a href="/"
+         class="px-2 py-1 rounded
+         {% if filter_by == 'all' %}bg-purple-700 text-white{% else %}text-gray-400 hover:bg-gray-700{% endif %}">
+        All
+      </a>
+      <a href="/?filter=active"
+         class="px-2 py-1 rounded
+         {% if filter_by == 'active' %}bg-purple-700 text-white{% else %}text-gray-400 hover:bg-gray-700{% endif %}">
+        Active
+      </a>
+      <a href="/?filter=completed"
+         class="px-2 py-1 rounded
+         {% if filter_by == 'completed' %}bg-purple-700 text-white{% else %}text-gray-400 hover:bg-gray-700{% endif %}">
+        Completed
+      </a>
+    </div>
+
+    <!-- Add‑task form -->
+    <form action="/add" method="POST" class="w-full flex gap-2 mb-6">
+      <input name="task" required placeholder="Enter a task…"
+             class="flex-1 p-2 rounded text-black focus:outline-none" />
+      <button class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded font-semibold">
+        Add
+      </button>
+    </form>
+
+    <!-- Tasks list -->
+    <ul id="task-list" class="space-y-2">
+      {% for task in tasks %}
+        <li id="task-{{ task.id }}"
+            class="bg-gray-800 p-4 rounded flex justify-between items-center transition-opacity duration-300 opacity-100">
+          <form action="/toggle/{{ task.id }}" method="POST" class="flex items-center gap-3">
+            <input type="checkbox" onChange="this.form.submit()"
+                   {% if task.completed %}checked{% endif %}
+                   class="w-5 h-5 accent-purple-600" />
+            <span class="{% if task.completed %}line-through text-gray-500{% endif %}">
+              {{ task.description }}
+            </span>
+          </form>
+          <a href="/delete/{{ task.id }}"
+             class="delete-btn text-red-500 hover:text-red-400 font-bold">❌</a>
+        </li>
+      {% else %}
+        <li class="text-gray-400 text-center">No tasks yet.</li>
+      {% endfor %}
+    </ul>
+
+    <!-- JS -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </div>
+</body>
+</html>
